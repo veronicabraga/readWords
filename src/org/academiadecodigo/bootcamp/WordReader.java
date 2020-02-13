@@ -6,37 +6,15 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Iterator;
 
-public class WordReader implements Iterable<String>{
+public class WordReader implements Iterable<String> {
 
-    FileReader reader;
-    String[] words;
+    private String filePath;
 
 
     public WordReader(String filePath) throws FileNotFoundException {
-        reader = new FileReader(filePath);
-    }
-
-    public String[] giveWords() throws IOException {
-
-        BufferedReader bReader = new BufferedReader(reader);
-
-        String line = "";
-        String result = "";
-
-
-        // using the buffered reader we can read lines
-        while((line = bReader.readLine()) != null) {
-            result += line + "\n";
-            words = result.split(" ");
-        }
-
-        bReader.close();
-
-        //return result;
-        return words;
+        this.filePath = filePath;
 
     }
-
 
 
     @Override
@@ -47,19 +25,73 @@ public class WordReader implements Iterable<String>{
 
     private class MyIterator implements Iterator<String> {
 
-        int index;
+        private int index;
+        private String[] words;
+        private BufferedReader bReader;
+
+        public MyIterator() {
+            FileReader reader = null;
+
+            try {
+                reader = new FileReader(filePath);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            bReader = new BufferedReader(reader);
+            giveWords();
+        }
+
+        public String[] giveWords() {
+
+
+            String line = "";
+
+            try {
+
+                line = bReader.readLine();
+                if (line == null) {
+                    bReader.close();
+                    words = null;
+                    return null;
+                }
+                words = line.split(" ");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+
+            return words;
+
+        }
 
         @Override
         public boolean hasNext() {
 
-            if (index < words.length) {
-                return true;
+
+            if (words != null) {
+                if (index < words.length) {
+
+                    return true;
+                }
             }
             return false;
+
         }
 
         @Override
         public String next() {
+
+
+            if ((index + 1) == words.length) {
+                giveWords();
+                index = 0;
+            }
+
+            if (words == null) {
+                return "";
+            }
+
             return words[index++];
 
         }
