@@ -11,7 +11,7 @@ public class WordReader implements Iterable<String> {
     private String filePath;
 
 
-    public WordReader(String filePath) throws FileNotFoundException {
+    public WordReader(String filePath) {
         this.filePath = filePath;
 
     }
@@ -28,9 +28,10 @@ public class WordReader implements Iterable<String> {
         private int index;
         private String[] words;
         private BufferedReader bReader;
+        private FileReader reader = null;
 
         public MyIterator() {
-            FileReader reader = null;
+
 
             try {
                 reader = new FileReader(filePath);
@@ -39,7 +40,7 @@ public class WordReader implements Iterable<String> {
             }
 
             bReader = new BufferedReader(reader);
-            giveWords();
+            words = giveWords();
         }
 
         public String[] giveWords() {
@@ -52,7 +53,7 @@ public class WordReader implements Iterable<String> {
                 line = bReader.readLine();
                 if (line == null) {
                     bReader.close();
-                    words = null;
+                    reader.close();
                     return null;
                 }
                 words = line.split(" ");
@@ -74,6 +75,11 @@ public class WordReader implements Iterable<String> {
 
                     return true;
                 }
+                if (index == words.length) {
+                    words = giveWords();
+                    index = 0;
+                    return true;
+                }
             }
             return false;
 
@@ -81,12 +87,6 @@ public class WordReader implements Iterable<String> {
 
         @Override
         public String next() {
-
-
-            if ((index + 1) == words.length) {
-                giveWords();
-                index = 0;
-            }
 
             if (words == null) {
                 return "";
