@@ -15,5 +15,10 @@ public class Main {
             for (String word : wordReader) {
                 System.out.println(word);
             }
+
+            Iterator iterator = wordReader.iterator();
+            while (iterator.hasNext()) {
+                System.out.println(iterator.next());
+            }
     }
 }
